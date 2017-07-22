@@ -14,9 +14,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState ){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-/*
         Button btAcao = (Button) findViewById(R.id.btnCalcular);
+        btAcao.setOnClickListener(this);
+/*
+
         btAcao.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
                 float precoGasolina = 0;
@@ -68,8 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
-
-
+    @Override
     public void onClick(View view) {
          if(view.getId() == R.id.btnCalcular )
             calcular( view);
