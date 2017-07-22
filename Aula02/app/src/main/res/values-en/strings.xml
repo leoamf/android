@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Class02</string>
+    <string name="txtFone">Phone</string>
+    <string name="SegundaTela">Second Screen</string>
+</resources>
