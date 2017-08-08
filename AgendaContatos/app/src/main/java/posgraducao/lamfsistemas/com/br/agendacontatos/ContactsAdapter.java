@@ -29,7 +29,7 @@ public class ContactsAdapter extends ArrayAdapter<Contact>{
 
         if(convertView == null) {
             convertView = LayoutInflater.from(getContext())
-                    .inflate(R.layout.fragment_main, parent, false);
+                    .inflate(R.layout.adp_contacts, parent, false);
         }
 
         TextView txtName = (TextView)convertView.findViewById(R.id.txtName );
@@ -37,10 +37,12 @@ public class ContactsAdapter extends ArrayAdapter<Contact>{
         TextView txtId = (TextView)convertView.findViewById(R.id.txtId);
 
         if(obj!=null) {
-            txtId.setText(obj.id);
+            txtId.setText( obj.id );
             txtName.setText(obj.name);
             txtFone.setText(obj.fone);
         }
+
+
 
         return convertView;
     }
