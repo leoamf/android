@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.util.ArrayList;
@@ -23,18 +24,22 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     public final static String OBJ_CONTATC = "posgraducao.lamfsistemas.com.br.agendacontatos.OBJ_CONTATC";
+    public final static String OBJ_LIST_CONTATC = "posgraducao.lamfsistemas.com.br.agendacontatos.OBJ_LIST_CONTATCS";
 
-
-    private List<Contact> contacts = new ArrayList<>();
+    private ArrayList<Contact> contacts = new ArrayList<>();
     private ListView lstView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        loadContacts();
-
+        Bundle extras = getIntent().getExtras();
+        if (extras != null)
+        {
+            contacts = (ArrayList<Contact>)extras.getSerializable(OBJ_LIST_CONTATC);
+        }else {
+            loadContacts();
+        }
         lstView = (ListView)findViewById(R.id.lstContacts);
         ContactsAdapter adp
                 = new ContactsAdapter(getApplicationContext(),contacts);
@@ -45,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
                 Intent it = new Intent(getApplicationContext(),DetailContact.class);
-                it.putExtra(OBJ_CONTATC, new Contact("1","Leonardo","12332122"));
+                it.putExtra(OBJ_CONTATC, contacts.get((int)id));
                 startActivity(it);
             }
         });
@@ -65,12 +70,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void loadContacts(){
-        contacts.add(new Contact("1","Leonardo","12332122"));
-        contacts.add(new Contact("2" ,"Alfredo Gordo Safado","89872256"));
-        contacts.add(new Contact("3","Ana Maria","55255866"));
+        contacts.add(new Contact(1,"Leonardo","12332122"));
+        contacts.add(new Contact(2 ,"Alfredo Gordo Safado","89872256"));
+        contacts.add(new Contact(3,"Ana Maria","55255866"));
     }
-
-
 
     @Override
     public void onClick(View view) {
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.btnAdd:
                 it = new Intent(getApplicationContext(),InsertContact.class);
-                it.putExtra("contact", new Contact("1","Leonardo","12332122"));
+                it.putExtra(OBJ_LIST_CONTATC,contacts);
                 startActivity(it);
                 break;
             case R.id.btnAlert:

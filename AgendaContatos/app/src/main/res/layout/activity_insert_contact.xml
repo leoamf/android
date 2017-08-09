@@ -6,23 +6,32 @@
     android:orientation="vertical" android:layout_width="match_parent"
     tools:context="posgraducao.lamfsistemas.com.br.agendacontatos.InsertContact">
 
-    <TextView
-        android:id="@+id/txtId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="insert" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/labelName" />
+    <EditText
         android:id="@+id/txtName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Barcelona" />
+        android:text="" />
 
     <TextView
-        android:id="@+id/txtFone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Barcelona" />
+        android:text="@string/labelFone" />
+    <EditText
+        android:id="@+id/txtFone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/save"  />
 
 
 </LinearLayout>

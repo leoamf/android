@@ -8,22 +8,22 @@ import java.io.Serializable;
 
 public class Contact implements Serializable  {
 
-    public String id;
+    public int id;
     public String name;
     public String fone;
 
-    public Contact(String id, String name,   String fone ){
+    public Contact(int id, String name,   String fone ){
         this.id = id;
         this.name = name;
         this.fone = fone;
     }
 
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 

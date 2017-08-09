@@ -37,7 +37,7 @@ public class ContactsAdapter extends ArrayAdapter<Contact>{
         TextView txtId = (TextView)convertView.findViewById(R.id.txtId);
 
         if(obj!=null) {
-            txtId.setText( obj.id );
+            txtId.setText(String.valueOf(  obj.id));
             txtName.setText(obj.name);
             txtFone.setText(obj.fone);
         }

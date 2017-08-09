@@ -7,21 +7,45 @@
     tools:context="posgraducao.lamfsistemas.com.br.agendacontatos.DetailContact">
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/labelId" />
+    <TextView
         android:id="@+id/txtId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="detalhe" />
+        android:text="" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/labelName" />
     <TextView
         android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Barcelona" />
+        android:text="" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/labelFone" />
     <TextView
         android:id="@+id/txtFone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Barcelona" />
+        android:text="" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnInternet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:rippleColor="@color/colorPrimaryDark"
+        app:srcCompat="@android:drawable/ic_menu_share" />
+
 
 </LinearLayout>

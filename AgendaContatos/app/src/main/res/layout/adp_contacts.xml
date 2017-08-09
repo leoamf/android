@@ -8,19 +8,19 @@
         android:id="@+id/txtId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Messi" />
+        android:text="" />
 
     <TextView
         android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Barcelona" />
+        android:text="" />
 
     <TextView
         android:id="@+id/txtFone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Barcelona" />
+        android:text="" />
 
 
 </LinearLayout>
