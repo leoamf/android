@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="posgraducao.lamfsistemas.com.br.exemplopersistencia.MainActivity">
+
+    <Button
+        android:onClick="callCadasdro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chama tela de cadastro"/>
+
+
+    <Button
+        android:onClick="Login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logar"/>
+
+    <Button
+        android:onClick="writeInterno"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Write Interno"/>
+
+    <Button
+        android:onClick="readInterno"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Read Interno"/>
+
+</LinearLayout>
