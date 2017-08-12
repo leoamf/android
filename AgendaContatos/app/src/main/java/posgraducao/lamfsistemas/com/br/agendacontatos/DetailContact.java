@@ -1,6 +1,8 @@
 package posgraducao.lamfsistemas.com.br.agendacontatos;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -8,26 +10,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import posgraducao.lamfsistemas.com.br.agendacontatos.util.MeuOpenHelper;
+
 public class DetailContact extends AppCompatActivity implements View.OnClickListener{
-    public final static String OBJ_CONTATC = "posgraducao.lamfsistemas.com.br.agendacontatos.OBJ_CONTATC";
+
+    public final static String ID_CONTATC = "posgraducao.lamfsistemas.com.br.agendacontatos.ID_CONTATC";
+    MeuOpenHelper meuOpenHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_contact);
 
+        meuOpenHelper = new MeuOpenHelper(getApplicationContext());
 
         Bundle extras = getIntent().getExtras();
         if (extras != null)
         {
-            Contact obj = (Contact)extras.getSerializable(OBJ_CONTATC);
-
-            TextView txtName = (TextView)this.findViewById(R.id.txtName );
-            TextView txtFone = (TextView)this.findViewById(R.id.txtFone);
-            TextView txtId = (TextView)this.findViewById(R.id.txtId);
-
-            txtId.setText(String.valueOf(  obj.id));
-            txtName.setText(obj.name);
-            txtFone.setText(obj.fone);
+            int idContact = (int)extras.getSerializable(ID_CONTATC);
+            getContact(idContact);
 
         }
 
@@ -46,6 +47,36 @@ public class DetailContact extends AppCompatActivity implements View.OnClickList
                 startActivity(intent);
                 break;
 
+        }
+    }
+
+    public void getContact(int Id) {
+
+        TextView txtName = (TextView)this.findViewById(R.id.txtName );
+        TextView txtFone = (TextView)this.findViewById(R.id.txtFone);
+        TextView txtId = (TextView)this.findViewById(R.id.txtId);
+
+        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
+        String table = "contatos";
+        String[] projection = {"id","name","fone"};
+
+        String selection = "id = ?";
+        String[] selectionArg = {String.valueOf(Id)};
+
+        Cursor c =
+                db.query(table,
+                        projection,
+                        selection,
+                        selectionArg,
+                        null,
+                        null,
+                        null,
+                        null);
+
+        if (c.moveToFirst()) {
+            txtId.setText(String.valueOf(  c.getInt(c.getColumnIndex("id"))));
+            txtName.setText( c.getString(c.getColumnIndex("name")));
+            txtFone.setText( c.getString(c.getColumnIndex("fone")));
         }
     }
 }

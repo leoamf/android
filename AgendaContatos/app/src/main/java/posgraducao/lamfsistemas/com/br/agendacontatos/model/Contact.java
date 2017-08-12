@@ -1,4 +1,4 @@
-package posgraducao.lamfsistemas.com.br.agendacontatos;
+package posgraducao.lamfsistemas.com.br.agendacontatos.model;
 
 import java.io.Serializable;
 

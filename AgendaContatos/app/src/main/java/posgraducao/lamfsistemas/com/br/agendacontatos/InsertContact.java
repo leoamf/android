@@ -1,9 +1,9 @@
 package posgraducao.lamfsistemas.com.br.agendacontatos;
 
-import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
-import android.net.Uri;
-import android.support.design.widget.FloatingActionButton;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -14,27 +14,51 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import posgraducao.lamfsistemas.com.br.agendacontatos.model.Contact;
+import posgraducao.lamfsistemas.com.br.agendacontatos.util.MeuOpenHelper;
+
 public class InsertContact extends AppCompatActivity implements View.OnClickListener {
 
-    public final static String OBJ_LIST_CONTATC = "posgraducao.lamfsistemas.com.br.agendacontatos.OBJ_LIST_CONTATCS";
+    MeuOpenHelper meuOpenHelper;
 
     private ArrayList<Contact> contacts = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_contact);
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null)
-        {
-            contacts = (ArrayList<Contact>)extras.getSerializable(OBJ_LIST_CONTATC);
-        }
-
+        meuOpenHelper = new MeuOpenHelper(getApplicationContext());
 
         Button btnSave = (Button) findViewById(R.id.btnSave);
         btnSave.setOnClickListener(this);
     }
 
+    public int getLastId(int Id) {
+
+        TextView txtName = (TextView)this.findViewById(R.id.txtName );
+        TextView txtFone = (TextView)this.findViewById(R.id.txtFone);
+        TextView txtId = (TextView)this.findViewById(R.id.txtId);
+
+        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
+        String table = "contatos";
+        String[] projection = {"id"};
+
+
+        Cursor c =
+                db.query(table,
+                        projection,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
+
+        if (c.moveToLast()) {
+           return  Integer.parseInt(c.getString(c.getColumnIndex("id"))) +1 ;
+        }else{
+            return 1 ;
+        }
+    }
     @Override
     public void onClick(View view) {
         Intent it =null;
@@ -44,11 +68,20 @@ public class InsertContact extends AppCompatActivity implements View.OnClickList
                 TextView txtName = (TextView)this.findViewById(R.id.txtName );
                 TextView txtFone = (TextView)this.findViewById(R.id.txtFone);
                 if(!(TextUtils.isEmpty(txtName.getText()))  ){
-                    contacts.add(new Contact(contacts.size()+1, txtName.getText().toString(),txtFone.getText().toString()));
-                    Toast.makeText(this, this.getResources().getString(R.string.saveInfo), Toast.LENGTH_SHORT).show();
+
+                    SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
+                    ContentValues contentValues = new ContentValues();
+
+                    contentValues.put("name", txtName.getText().toString());
+                    contentValues.put("fone", txtFone.getText().toString());
+                    long idContato = db.insert("contatos", null, contentValues);
+                    db.close();
+
+                    Toast.makeText(getApplicationContext(),
+                            this.getResources().getString(R.string.saveInfo) + "(idContato: " + idContato+")",
+                            Toast.LENGTH_SHORT).show();
 
                     it = new Intent(getApplicationContext(), MainActivity.class);
-                    it.putExtra(OBJ_LIST_CONTATC,contacts);
                     startActivity(it);
                 }else{
                     Toast.makeText(this, this.getResources().getString(R.string.withoutName), Toast.LENGTH_SHORT).show();
@@ -57,4 +90,6 @@ public class InsertContact extends AppCompatActivity implements View.OnClickList
 
         }
     }
+
+
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="posgraducao.lamfsistemas.com.br.requesthttp.MainActivity">
+
+
+
+
+
+    <Button
+        android:id="@+id/okHttp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ok HTTP"
+        android:layout_alignParentTop="true"
+        android:onClick="okHttp"/>
+
+    <Button
+        android:id="@+id/retrofit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Retrofit"
+        android:layout_below="@id/okHttp"
+        android:onClick="retrofit"/>
+
+    <TextView
+        android:id="@+id/txtTexto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MainActivity"
+        android:layout_below="@+id/retrofit"/>
+
+</RelativeLayout>

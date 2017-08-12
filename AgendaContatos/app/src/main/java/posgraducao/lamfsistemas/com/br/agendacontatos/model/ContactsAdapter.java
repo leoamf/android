@@ -1,4 +1,4 @@
-package posgraducao.lamfsistemas.com.br.agendacontatos;
+package posgraducao.lamfsistemas.com.br.agendacontatos.model;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -9,6 +9,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
+import posgraducao.lamfsistemas.com.br.agendacontatos.R;
+import posgraducao.lamfsistemas.com.br.agendacontatos.model.Contact;
 
 /**
  * Created by Leonardo on 05/08/2017.

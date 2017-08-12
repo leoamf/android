@@ -11,4 +11,7 @@
     <string name="save">Salvar</string>
     <string name="saveInfo">Dados salvos com sucesso!</string>
     <string name="withoutName">Informe o nome do contato.</string>
+    <string name="deleteRecord">Excluir Registro</string>
+    <string name="askDeleteRecord">Deseja Excluir o regirtro?</string>
+    <string name="deleteSucess">deletado com sucesso!</string>
 </resources>
