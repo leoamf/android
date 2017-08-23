@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -51,11 +52,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         meuOpenHelper = new MeuOpenHelper(getApplicationContext());
 
-        if(!Util.IsConnected(getApplicationContext())) {
-            loadDBContacts();
-        }else{
-            loadHTTPContacts();
-        }
+        loadDBContacts();
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -67,6 +65,8 @@ public class MainActivity extends AppCompatActivity
         FloatingActionButton btnAlert = (FloatingActionButton) findViewById(R.id.btnAlert);
         btnAlert.setOnClickListener(this);
 
+        FloatingActionButton btnLoad = (FloatingActionButton) findViewById(R.id.btnLoad);
+        btnLoad.setOnClickListener(this);
 
     }
 
@@ -109,6 +109,31 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public void insert(String name,String fone) {
+        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put("name", name);
+        contentValues.put("fone", fone);
+        long idContato = db.insert("contatos", null, contentValues);
+        db.close();
+    }
+
+    public void update(Contact contact){
+        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put("name", contact.getName());
+        contentValues.put("fone", contact.getFone());
+
+        String where = "id = ? ";
+        String[] whereArg = {  String.valueOf(contact.getId())};
+
+        db.beginTransaction();
+        db.update("contatos", contentValues, where, whereArg);
+        db.endTransaction();
+    }
+
     public void delete(int idSelected) {
         SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
         String whereClause = "id = ?";
@@ -117,21 +142,39 @@ public class MainActivity extends AppCompatActivity
         db.delete("contatos", whereClause, whereArgs);
     }
 
+    public Contact getContact(String name){
+        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
+        String[] projection = {"id","name","fone"};
+        String whereClause = "name = ?";
+        String[] whereArgs = { name};
+
+        Cursor cursor = db.query("contatos", projection, whereClause, whereArgs, null, null, null);
+        Contact registro =null;
+        if(cursor.moveToFirst()){
+            do{
+                registro = new Contact( cursor.getInt(cursor.getColumnIndex("id")),
+                                        cursor.getString(cursor.getColumnIndex("name")),
+                                        cursor.getString(cursor.getColumnIndex("fone")));
+            } while(cursor.moveToNext());
+        }
+        return registro;
+
+    }
+
     @Override
     public void onNewsApiResult(List<People> peoples) {
         contacts.clear();
         for(People obj:peoples){
             String name = obj.getName();
             String fone = obj.getHeight();
-            int id =  contacts.size()+1;
-            contacts.add(new Contact(id, name, fone));
+            Contact contact = getContact(name);
+            if(contact!=null){
+                this.update(contact);
+            }else {
+                this.insert(name, fone);
+            }
         }
-        lstView = (ListView)findViewById(R.id.lstContacts);
-        adp  = new ContactsAdapter(getApplicationContext(),contacts);
-        lstView.setAdapter(adp);
-
-        associateList();
-
+        loadDBContacts();
     }
 
     private void loadHTTPContacts(){
@@ -173,7 +216,13 @@ public class MainActivity extends AppCompatActivity
             case R.id.btnAlert:
                 ativarAlarme();
                 break;
-
+            case R.id.btnLoad:
+                if(!Util.IsConnected(getApplicationContext()))
+                    Toast.makeText(getApplicationContext(), this.getResources().getString(R.string.offline), Toast.LENGTH_LONG).show();
+                else{
+                    loadHTTPContacts();
+                }
+                break;
         }
     }
 
