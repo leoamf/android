@@ -18,6 +18,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitAsyncTask
         extends AsyncTask<String, Void,List<People>> {
 
+    private static Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("http://swapi.co/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+    public static Retrofit getBuilderStarWarsRetrofit() {
+        return retrofit;
+    }
+
     public RetrofitAsyncTask(GetNewsApiListener getNewsApiListener) {
         if(getNewsApiListener!=null) {
             this.getNewsApiListener = getNewsApiListener;
@@ -44,7 +53,7 @@ public class RetrofitAsyncTask
         Response<ResultSwapi> resultNewApi = null;
         try {
             resultNewApi =  service.getNewApi().execute();
-            return resultNewApi.body().getResults();
+            return resultNewApi.body().getResults().Peoples ;
         } catch (IOException e) {
             e.printStackTrace();
         }

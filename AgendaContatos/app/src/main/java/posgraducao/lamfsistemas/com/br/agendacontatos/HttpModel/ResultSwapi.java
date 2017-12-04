@@ -10,7 +10,7 @@ import posgraducao.lamfsistemas.com.br.agendacontatos.HttpModel.People;
 
 public class ResultSwapi {
     private String count;
-    private List<People> results;
+    private Peoples results;
 
     public ResultSwapi() {
 
@@ -24,11 +24,11 @@ public class ResultSwapi {
         this.count = count;
     }
 
-    public List<People> getResults() {
+    public  Peoples getResults() {
         return results;
     }
 
-    public void setResults(List<People> results) {
+    public void setResults(Peoples results) {
         this.results = results;
     }
 }

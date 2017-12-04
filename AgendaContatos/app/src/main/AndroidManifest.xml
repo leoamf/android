@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity"  android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".ui.MainActivity"  android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -26,11 +26,11 @@
                 <data android:scheme="http" android:host="androidium.org"/>
             </intent-filter>
         </activity>
-        <activity android:name=".InsertContact" />
-        <activity android:name=".DetailContact"></activity>
+        <activity android:name=".ui.InsertContact" />
+        <activity android:name=".ui.DetailContact"></activity>
 
         <receiver
-            android:name=".AlarmeReceiver"
+            android:name=".ui.AlarmeReceiver"
             android:enabled="true"
             android:exported="true" >
         </receiver>
