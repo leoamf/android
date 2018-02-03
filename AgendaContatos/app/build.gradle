@@ -29,11 +29,12 @@ dependencies {
     compile 'com.android.support:support-v4:25.1.0'
     compile 'com.android.support:recyclerview-v7:25.1.0'
     compile 'com.android.support:design:25.1.0'
-
+    testCompile 'junit:junit:4.12'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
 
     implementation "android.arch.lifecycle:extensions:1.0.0"
-
-    testCompile 'junit:junit:4.12'
+    annotationProcessor 'android.arch.lifecycle:compiler:1.0.0'
+    implementation "android.arch.persistence.room:runtime:1.0.0"
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
 }

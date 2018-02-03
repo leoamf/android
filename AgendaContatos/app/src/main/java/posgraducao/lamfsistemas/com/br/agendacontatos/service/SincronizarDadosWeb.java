@@ -1,6 +1,7 @@
 package posgraducao.lamfsistemas.com.br.agendacontatos.service;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import posgraducao.lamfsistemas.com.br.agendacontatos.DAO.BaseDados;
 import posgraducao.lamfsistemas.com.br.agendacontatos.HttpModel.People;
 import posgraducao.lamfsistemas.com.br.agendacontatos.R;
 import posgraducao.lamfsistemas.com.br.agendacontatos.communication.RetrofitAsyncTask;
@@ -55,30 +57,33 @@ public class SincronizarDadosWeb  extends Service {
 
         @Override
         public void onNewsApiResult(List<People> peoples) {
+            BaseDados db =   BaseDados.getDatabase(getApplicationContext()  );
 
             for(People obj:peoples){
                 String name = obj.getName();
                 String fone = obj.getHeight();
-                Contact contact =  MainActivity.getContact(name);
-                if(contact!=null){
-                    MainActivity.update(contact);
+                List<Contact> contacts =  db.ContactDao().findPeloName(name)  ;
+                if(contacts.size() >0){
+                    Contact contato = contacts.get(0);
+                    contato.setFone(fone);
+                    contato.setName(name);
+                    db.ContactDao().atualizar(contato);
                 }else {
-                    MainActivity.insert(name, fone);
+                    db.ContactDao().criar(new Contact(0,name,fone));
                 }
             }
+
             Toast.makeText(getApplicationContext(),
                     getApplicationContext().getResources().getString(R.string.infoLoadWeb)  ,
                     Toast.LENGTH_SHORT).show();
-            Intent it =null;
-            it = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(it);
+
         }
 
         private static final String URL_SERVICO = "https://swapi.co/api/";
         @Override
         protected Object doInBackground(Object[] objects) {
             try {
-                Intent intent = new Intent("MyReceiver.received");
+                Intent intent = new Intent("received.received");
                 intent.putExtra("result", "Chamando servicosWeb");
                 if(!Util.IsConnected(getApplicationContext()))
                     Toast.makeText(getApplicationContext(), getApplication().getResources().getString(R.string.offline), Toast.LENGTH_LONG).show();

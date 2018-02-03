@@ -4,6 +4,12 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.arch.lifecycle.OnLifecycleEvent;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,9 +17,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -23,10 +33,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Observer;
 
+import posgraducao.lamfsistemas.com.br.agendacontatos.DAO.BaseDados;
 import posgraducao.lamfsistemas.com.br.agendacontatos.R;
 import posgraducao.lamfsistemas.com.br.agendacontatos.communication.RetrofitAsyncTask;
 import posgraducao.lamfsistemas.com.br.agendacontatos.model.Contact;
+import posgraducao.lamfsistemas.com.br.agendacontatos.model.ContactModel;
+import posgraducao.lamfsistemas.com.br.agendacontatos.model.Contacts;
 import posgraducao.lamfsistemas.com.br.agendacontatos.model.ContactsAdapter;
 import posgraducao.lamfsistemas.com.br.agendacontatos.HttpModel.People;
 import posgraducao.lamfsistemas.com.br.agendacontatos.service.SincronizarDadosWeb;
@@ -35,30 +49,27 @@ import posgraducao.lamfsistemas.com.br.agendacontatos.util.Util;
 import posgraducao.lamfsistemas.com.br.agendacontatos.viewmodel.ContactViewModel;
 
 public class MainActivity extends AppCompatActivity
-        implements View.OnClickListener  {
+        implements View.OnClickListener , LifecycleRegistryOwner, LifecycleObserver  {
+
 
     public final static String ID_CONTATC = "posgraducao.lamfsistemas.com.br.agendacontatos.ID_CONTATC";
 
 
     public static MeuOpenHelper meuOpenHelper;
+    LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(this);
 
-    public  ArrayList<Contact> contacts = new ArrayList<>();
-    private ListView lstView;
+    private    Contact contado  ;
     private ContactsAdapter adp = null ;
     private static long  idList;
     private static int  posList ;
     private AlertDialog.Builder alertDelete;
-
+    private ContactsAdapter adapter;
     private ContactViewModel viewModel;
-
+    private ListView lstView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        meuOpenHelper = new MeuOpenHelper(getApplicationContext());
-
-
-        loadDBContacts();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -73,13 +84,36 @@ public class MainActivity extends AppCompatActivity
         FloatingActionButton btnLoad = (FloatingActionButton) findViewById(R.id.btnLoad);
         btnLoad.setOnClickListener(this);
 
+        getLifecycle().addObserver(this);
+        viewModel = ViewModelProviders.of(this).get(ContactViewModel.class);
+
+        lstView = (ListView)findViewById(R.id.lstContacts);
+
+        viewModel.getContacts().observe(this, new android.arch.lifecycle.Observer<List<Contact>>() {
+            @Override
+            public void onChanged(@Nullable List<Contact> contacts) {
+                if (contacts != null) {
+                    lstView.setAdapter(new ContactsAdapter(getApplicationContext(), contacts));
+                    associateList();
+                }
+            }
+        });
+
     }
     @Override
-    public void onResume(){
-        super.onResume();
-
+    public LifecycleRegistry getLifecycle() {
+        return lifecycleRegistry;
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    public void onDestroyLifecycke() {
+        Log.d(MainActivity.class.getSimpleName(), "Lifecycle.Event.ON_DESTROY");
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    public void onCreateLifecycke() {
+        Log.d(MainActivity.class.getSimpleName(), "Lifecycle.Event.ON_CREATE");
+    }
     private void associateList(){
 
         lstView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -87,7 +121,7 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
                 Intent it = new Intent(getApplicationContext(),DetailContact.class);
-                it.putExtra(ID_CONTATC, contacts.get((int)id).getId());
+                it.putExtra(ID_CONTATC, ((Contact)(((ListView) parent).getAdapter().getItem(position))).getId());
                 startActivity(it);
             }
         });
@@ -97,11 +131,11 @@ public class MainActivity extends AppCompatActivity
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        delete(contacts.get((int)idList).getId());
-                        Toast.makeText(getApplicationContext(),String.valueOf(contacts.get((int)idList).getName()) + getString(R.string.deleteSucess) ,  Toast.LENGTH_SHORT).show();
+                       // delete(contado.getId());
+                        BaseDados db =   BaseDados.getDatabase(getApplicationContext()  );
+                        db.ContactDao().excluir( db.ContactDao().findPeloId( contado.getId()));
+                        Toast.makeText(getApplicationContext(),String.valueOf(contado.getName()) + getString(R.string.deleteSucess) ,  Toast.LENGTH_SHORT).show();
 
-                        contacts.remove(posList);
-                        adp.notifyDataSetChanged();
                     }})
                 .setNegativeButton(android.R.string.no, null);
 
@@ -112,6 +146,7 @@ public class MainActivity extends AppCompatActivity
                                            int pos, long id) {
                 posList = pos;
                 idList=id;
+                contado = ((Contact)(((ListView) arg0).getAdapter().getItem(pos)));
                 alertDelete.show();
                 return true;
             }
@@ -119,84 +154,23 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public static void insert(String name,String fone) {
-        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-
-        contentValues.put("name", name);
-        contentValues.put("fone", fone);
-        long idContato = db.insert("contatos", null, contentValues);
+    public void delete(int idSelected) {
+        BaseDados db =   BaseDados.getDatabase(getApplicationContext()  );
+        Contact contact = db.ContactDao().findPeloId(idSelected);
+        db.ContactDao().excluir(contact);
         db.close();
     }
-
-    public static void update(Contact contact){
-        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-
-        contentValues.put("name", contact.getName());
-        contentValues.put("fone", contact.getFone());
-
-        String where = "id = ? ";
-        String[] whereArg = {  String.valueOf(contact.getId())};
-
-        db.beginTransaction();
-        db.update("contatos", contentValues, where, whereArg);
-        db.endTransaction();
-    }
-
-    public void delete(int idSelected) {
-        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
-        String whereClause = "id = ?";
-        int id = idSelected;
-        String[] whereArgs = { String.valueOf(id)};
-        db.delete("contatos", whereClause, whereArgs);
-    }
-
-    public static Contact getContact(String name){
-        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
-        String[] projection = {"id","name","fone"};
-        String whereClause = "name = ?";
-        String[] whereArgs = { name};
-
-        Cursor cursor = db.query("contatos", projection, whereClause, whereArgs, null, null, null);
-        Contact registro =null;
-        if(cursor.moveToFirst()){
-            do{
-                registro = new Contact( cursor.getInt(cursor.getColumnIndex("id")),
-                                        cursor.getString(cursor.getColumnIndex("name")),
-                                        cursor.getString(cursor.getColumnIndex("fone")));
-            } while(cursor.moveToNext());
-        }
-        return registro;
-
-    }
-
-    public   void loadDBContacts(){
-        contacts.clear();
-
-        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
-        Cursor c = db.rawQuery("select * from contatos", null);
-        c.moveToFirst();
-        List<String> carrosStringList = new ArrayList();
-
-        if(c.moveToFirst()) {
-            do {
-                String name = c.getString(c.getColumnIndex("name"));
-                String fone = c.getString(c.getColumnIndex("fone"));
-                int id = c.getInt(c.getColumnIndex("id"));
-                contacts.add(new Contact(id, name, fone));
-            } while (c.moveToNext());
-        }
-        lstView = (ListView)findViewById(R.id.lstContacts);
-        adp  = new ContactsAdapter(getApplicationContext(),contacts);
-        lstView.setAdapter(adp);
-        associateList();
-
+    public void received(int idSelected) {
+        BaseDados db =   BaseDados.getDatabase(getApplicationContext()  );
+        Contact contact = db.ContactDao().findPeloId(idSelected);
+        db.ContactDao().excluir(contact);
+        db.close();
     }
 
     @Override
     public void onClick(View view) {
         Intent  it =null;
+
         switch (view.getId()) {
             case R.id.btnAdd:
                 it = new Intent(getApplicationContext(),InsertContact.class);
@@ -243,4 +217,6 @@ public class MainActivity extends AppCompatActivity
                 calendar.get(Calendar.MINUTE), true);
         dialog.show();
     }
+
+
 }

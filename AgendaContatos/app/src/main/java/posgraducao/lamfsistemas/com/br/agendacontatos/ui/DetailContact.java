@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import posgraducao.lamfsistemas.com.br.agendacontatos.DAO.BaseDados;
 import posgraducao.lamfsistemas.com.br.agendacontatos.R;
+import posgraducao.lamfsistemas.com.br.agendacontatos.model.Contact;
 import posgraducao.lamfsistemas.com.br.agendacontatos.util.MeuOpenHelper;
 
 public class DetailContact extends AppCompatActivity implements View.OnClickListener{
@@ -53,31 +55,15 @@ public class DetailContact extends AppCompatActivity implements View.OnClickList
 
     public void getContact(int Id) {
 
-        TextView txtName = (TextView)this.findViewById(R.id.txtName );
-        TextView txtFone = (TextView)this.findViewById(R.id.txtFone);
-        TextView txtId = (TextView)this.findViewById(R.id.txtId);
+            TextView txtName = (TextView)this.findViewById(R.id.txtName );
+            TextView txtFone = (TextView)this.findViewById(R.id.txtFone);
+            TextView txtId = (TextView)this.findViewById(R.id.txtId);
 
-        SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
-        String table = "contatos";
-        String[] projection = {"id","name","fone"};
+            BaseDados db =   BaseDados.getDatabase(getApplicationContext()  );
+            Contact contato =   db.ContactDao().findPeloId(Id);
+            txtId.setText(String.valueOf( contato.getId()));
+            txtName.setText(contato.getName());
+            txtFone.setText(contato.getFone());
 
-        String selection = "id = ?";
-        String[] selectionArg = {String.valueOf(Id)};
-
-        Cursor c =
-                db.query(table,
-                        projection,
-                        selection,
-                        selectionArg,
-                        null,
-                        null,
-                        null,
-                        null);
-
-        if (c.moveToFirst()) {
-            txtId.setText(String.valueOf(  c.getInt(c.getColumnIndex("id"))));
-            txtName.setText( c.getString(c.getColumnIndex("name")));
-            txtFone.setText( c.getString(c.getColumnIndex("fone")));
-        }
     }
 }

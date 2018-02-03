@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import posgraducao.lamfsistemas.com.br.agendacontatos.DAO.BaseDados;
 import posgraducao.lamfsistemas.com.br.agendacontatos.R;
 import posgraducao.lamfsistemas.com.br.agendacontatos.model.Contact;
 import posgraducao.lamfsistemas.com.br.agendacontatos.ui.MainActivity;
@@ -71,16 +72,18 @@ public class InsertContact extends AppCompatActivity implements View.OnClickList
                 TextView txtFone = (TextView)this.findViewById(R.id.txtFone);
                 if(!(TextUtils.isEmpty(txtName.getText()))  ){
 
-                    SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
-                    ContentValues contentValues = new ContentValues();
+//                    SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
+//                    ContentValues contentValues = new ContentValues();
+//
+//                    contentValues.put("name", txtName.getText().toString());
+//                    contentValues.put("fone", txtFone.getText().toString());
+//                    long idContato = db.insert("contatos", null, contentValues);
+                    BaseDados db =   BaseDados.getDatabase(getApplicationContext()  );
+                    db.ContactDao().criar(new Contact( txtName.getText().toString(),txtFone.getText().toString()));
 
-                    contentValues.put("name", txtName.getText().toString());
-                    contentValues.put("fone", txtFone.getText().toString());
-                    long idContato = db.insert("contatos", null, contentValues);
-                    db.close();
 
                     Toast.makeText(getApplicationContext(),
-                            this.getResources().getString(R.string.saveInfo) + "(idContato: " + idContato+")",
+                            this.getResources().getString(R.string.saveInfo)  ,
                             Toast.LENGTH_SHORT).show();
 
                     it = new Intent(getApplicationContext(), MainActivity.class);
