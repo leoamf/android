@@ -34,7 +34,10 @@
             android:enabled="true"
             android:exported="true" >
         </receiver>
-
+        <service
+            android:name=".service.SincronizarDadosWeb"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

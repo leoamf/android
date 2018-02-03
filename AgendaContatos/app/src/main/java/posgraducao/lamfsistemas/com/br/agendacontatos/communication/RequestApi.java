@@ -11,5 +11,5 @@ import retrofit2.http.GET;
 public interface RequestApi {
 
     @GET("people")
-    Call<ResultSwapi> getNewApi();
+    Call<ResultSwapi> getPeople();
 }

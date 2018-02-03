@@ -52,8 +52,8 @@ public class RetrofitAsyncTask
         RequestApi service = retrofit.create(RequestApi.class);
         Response<ResultSwapi> resultNewApi = null;
         try {
-            resultNewApi =  service.getNewApi().execute();
-            return resultNewApi.body().getResults().Peoples ;
+            resultNewApi =  service.getPeople().execute();
+            return resultNewApi.body().getResults()   ;
         } catch (IOException e) {
             e.printStackTrace();
         }

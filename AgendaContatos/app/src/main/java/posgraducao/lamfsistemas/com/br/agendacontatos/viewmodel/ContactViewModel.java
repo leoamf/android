@@ -3,16 +3,17 @@ package posgraducao.lamfsistemas.com.br.agendacontatos.viewmodel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
-import posgraducao.lamfsistemas.com.br.agendacontatos.HttpModel.Peoples;
+import java.util.List;
+
+import posgraducao.lamfsistemas.com.br.agendacontatos.HttpModel.People;
 import posgraducao.lamfsistemas.com.br.agendacontatos.HttpModel.PeoplesRepository;
-import posgraducao.lamfsistemas.com.br.agendacontatos.model.Contact;
 
 /**
  * Created by l.machado.de.freitas on 02/12/2017.
  */
 
 public class ContactViewModel extends ViewModel  {
-    private LiveData<Peoples> mPeoples;
+    private LiveData<List<People>> mPeoples;
     private PeoplesRepository  peoplesRepository
             = new PeoplesRepository();
 
@@ -24,7 +25,7 @@ public class ContactViewModel extends ViewModel  {
         mPeoples = peoplesRepository.getPeoples();
     }
 
-    public LiveData<Peoples> getContacts() {
+    public LiveData<List<People>> getContacts() {
         return this.mPeoples;
     }
 }

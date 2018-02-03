@@ -29,19 +29,20 @@ import posgraducao.lamfsistemas.com.br.agendacontatos.communication.RetrofitAsyn
 import posgraducao.lamfsistemas.com.br.agendacontatos.model.Contact;
 import posgraducao.lamfsistemas.com.br.agendacontatos.model.ContactsAdapter;
 import posgraducao.lamfsistemas.com.br.agendacontatos.HttpModel.People;
+import posgraducao.lamfsistemas.com.br.agendacontatos.service.SincronizarDadosWeb;
 import posgraducao.lamfsistemas.com.br.agendacontatos.util.MeuOpenHelper;
 import posgraducao.lamfsistemas.com.br.agendacontatos.util.Util;
 import posgraducao.lamfsistemas.com.br.agendacontatos.viewmodel.ContactViewModel;
 
 public class MainActivity extends AppCompatActivity
-        implements View.OnClickListener,   RetrofitAsyncTask.GetNewsApiListener {
+        implements View.OnClickListener  {
 
     public final static String ID_CONTATC = "posgraducao.lamfsistemas.com.br.agendacontatos.ID_CONTATC";
-    private static final String URL_SERVICO = "https://swapi.co/api/";
 
-    private MeuOpenHelper meuOpenHelper;
 
-    private ArrayList<Contact> contacts = new ArrayList<>();
+    public static MeuOpenHelper meuOpenHelper;
+
+    public  ArrayList<Contact> contacts = new ArrayList<>();
     private ListView lstView;
     private ContactsAdapter adp = null ;
     private static long  idList;
@@ -56,8 +57,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         meuOpenHelper = new MeuOpenHelper(getApplicationContext());
 
-        loadDBContacts();
 
+        loadDBContacts();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -71,6 +72,11 @@ public class MainActivity extends AppCompatActivity
 
         FloatingActionButton btnLoad = (FloatingActionButton) findViewById(R.id.btnLoad);
         btnLoad.setOnClickListener(this);
+
+    }
+    @Override
+    public void onResume(){
+        super.onResume();
 
     }
 
@@ -113,7 +119,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void insert(String name,String fone) {
+    public static void insert(String name,String fone) {
         SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -123,7 +129,7 @@ public class MainActivity extends AppCompatActivity
         db.close();
     }
 
-    public void update(Contact contact){
+    public static void update(Contact contact){
         SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -146,7 +152,7 @@ public class MainActivity extends AppCompatActivity
         db.delete("contatos", whereClause, whereArgs);
     }
 
-    public Contact getContact(String name){
+    public static Contact getContact(String name){
         SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
         String[] projection = {"id","name","fone"};
         String whereClause = "name = ?";
@@ -165,29 +171,8 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @Override
-    public void onNewsApiResult(List<People> peoples) {
+    public   void loadDBContacts(){
         contacts.clear();
-        for(People obj:peoples){
-            String name = obj.getName();
-            String fone = obj.getHeight();
-            Contact contact = getContact(name);
-            if(contact!=null){
-                this.update(contact);
-            }else {
-                this.insert(name, fone);
-            }
-        }
-        loadDBContacts();
-    }
-
-    private void loadHTTPContacts(){
-        if(Util.IsConnected(getApplicationContext())){
-            RetrofitAsyncTask asyncTask = new RetrofitAsyncTask(this) ;
-            asyncTask.execute(URL_SERVICO);
-        }
-    }
-    private void loadDBContacts(){
 
         SQLiteDatabase db = meuOpenHelper.getWritableDatabase();
         Cursor c = db.rawQuery("select * from contatos", null);
@@ -221,11 +206,8 @@ public class MainActivity extends AppCompatActivity
                 ativarAlarme();
                 break;
             case R.id.btnLoad:
-                if(!Util.IsConnected(getApplicationContext()))
-                    Toast.makeText(getApplicationContext(), this.getResources().getString(R.string.offline), Toast.LENGTH_LONG).show();
-                else{
-                    loadHTTPContacts();
-                }
+                Intent i = new Intent(MainActivity.this, SincronizarDadosWeb.class);
+                startService(i);
                 break;
         }
     }

@@ -4,6 +4,8 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
+import java.util.List;
+
 import posgraducao.lamfsistemas.com.br.agendacontatos.communication.RequestApi;
 import posgraducao.lamfsistemas.com.br.agendacontatos.communication.RetrofitAsyncTask;
 import posgraducao.lamfsistemas.com.br.agendacontatos.model.Contacts;
@@ -19,9 +21,9 @@ public class PeoplesRepository {
 
     private RequestApi webService = RetrofitAsyncTask.getBuilderStarWarsRetrofit().create(RequestApi.class);
 
-    public LiveData<Peoples> getPeoples() {
-        final MutableLiveData<Peoples> data = new MutableLiveData<>();
-        webService.getNewApi().enqueue(new Callback<ResultSwapi>() {
+    public LiveData<List<People>> getPeoples() {
+        final MutableLiveData<List<People>> data = new MutableLiveData<>();
+        webService.getPeople().enqueue(new Callback<ResultSwapi>() {
             @Override
             public void onResponse(Call<ResultSwapi> call, Response<ResultSwapi> response) {
                 data.setValue(response.body().getResults());

@@ -15,4 +15,5 @@
     <string name="askDeleteRecord">Deseja Excluir o regirtro?</string>
     <string name="deleteSucess"> deletado com sucesso!</string>
     <string name="offline">Rede não disponível, tente novamente mais tarde.</string>
+    <string name="infoLoadWeb">Dados Sincronizados com o Serviço Web!</string>
 </resources>
